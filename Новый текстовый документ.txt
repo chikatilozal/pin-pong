@@ -1,0 +1,118 @@
+# Ping-Pong
+import pygame
+import random
+from pygame import *
+from random import randint
+import ctypes
+
+img_bc = (spr3.jpg)
+pygame.init()
+win_width = 800
+win_height = 600
+window = pygame.display.set_mode((win_width, win_height))
+pygame.display.set_caption('Ping-Pong')
+background = transform.scale(image.load(img_back), (win_width, win_height))
+
+class Paddle:
+    def __init_(self,x ,y):
+        self.x = x
+        self.y = y
+        self.width = 10
+        self.height = 100
+        self.color = (0, 0, 0)
+        self.speed = 5
+    def draw(self):
+    
+pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
+
+    def move_up(self):
+        self.y -= self.speed
+    def move_down(self):
+        self.y += self.speed
+
+class Ball:
+    def __init__(self):
+        self.x = screen_width / 2
+        self.y = screen_height / 2
+        self.radius = 10
+        self.color = (0, 0, 0)
+        self.speed_x = 5
+        self.speed_y = 5
+     def draw(self):
+         pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)), self.radius)
+        
+        
+paddle1 = Paddle(50, screen_height / 2 - 50)
+paddle2 = Paddle(screen_width - 60, screen_height / 2 - 50)
+ball = Ball()
+
+
+def update_positions():
+    # Обновить позицию первой ракетки
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_w]:
+        paddle1.move_up()
+    if keys[pygame.K_s]:
+        paddle1.move_down()
+
+    # Обновить позицию второй ракетки
+    if ball.x > screen_width / 2:
+        if ball.y < paddle2.y + paddle2.height / 2:
+            paddle2.move_up()
+        if ball.y > paddle2.y + paddle2.height / 2:
+            paddle2.move_down()
+
+    # Обновить позицию мяча
+    ball.x += ball.speed_x
+    ball.y += ball.speed_y
+
+    # Отразить мяч от верхней и нижней границ экрана
+    if ball.y <= ball.radius or ball.y >= screen_height - ball.radius:
+        ball.speed_y = -ball.speed_y
+
+    # Отразить мяч от ракеток
+    if ball.x <= paddle1.x + paddle1.width and \
+            paddle1.y <= ball.y <= paddle1.y + paddle1.height:
+        ball.speed_x = -ball.speed_x
+    if ball.x >= paddle2.x - ball.radius and \
+            paddle2.y <= ball.y <= paddle2.y + paddle2.height:
+        ball.speed_x = -ball.speed_x
+
+    # Проверить, вышел ли мяч за границы экрана
+    if ball.x < 0 or ball.x > screen_width:
+        # Вернуть мяч в центр экрана
+        ball.x = screen_width / 2
+        ball.y = screen_height / 2
+        # Случайно выбрать направление движения мяча
+        ball.speed_x = random.choice([-5, 5])
+        ball.speed_y = random.choice([-5, 5])
+        
+        
+def draw_objects():
+    # Отрисовать ракетки и мяч
+    paddle1.draw()
+    paddle2.draw()
+    ball.draw()
+
+    # Отрисовать среднюю линию
+    pygame.draw.line(screen, (0, 0, 0), (screen_width / 2, 0), (screen_width / 2, screen_height))
+    
+    
+while True:
+    # Обработать события Pygame
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+
+    # Очистить экран
+    screen.fill(bg_color)
+
+    # Обновить позиции объектов
+    update_positions()
+
+    # Отрисовать объекты на экране
+    draw_objects()
+
+    # Обновить экран
+    pygame.display.flip()
